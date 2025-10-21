@@ -1,10 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { UploadDropzone } from "@/components/UploadDropzone";
-import { PanelGrid } from "@/components/PanelGrid";
-import { PromptBar } from "@/components/PromptBar";
-import { PageToolbar } from "@/components/PageToolbar";
+import { StudioClient } from "./StudioClient";
 
 const hasClerkKeys = 
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
@@ -23,18 +20,13 @@ export default async function StudioPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Panel Forge Studio</h1>
           <div className="flex items-center gap-4">
-            <PageToolbar />
             {hasClerkKeys && <UserButton />}
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          <UploadDropzone />
-          <PromptBar />
-          <PanelGrid />
-        </div>
+        <StudioClient />
       </main>
     </div>
   );
