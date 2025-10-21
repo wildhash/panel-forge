@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { rateLimit, getRateLimitHeaders } from "@/lib/rate-limit";
 
 const IterateRequestSchema = z.object({
   panelId: z.string(),
@@ -13,6 +14,18 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limiting: 10 requests per minute per user
+    const rateLimitConfig = { interval: 60000, maxRequests: 10 };
+    const allowed = rateLimit(`iterate:${userId}`, rateLimitConfig);
+    
+    if (!allowed) {
+      const headers = getRateLimitHeaders(`iterate:${userId}`, rateLimitConfig);
+      return NextResponse.json(
+        { error: "Rate limit exceeded. Please try again later." },
+        { status: 429, headers }
+      );
     }
 
     const body = await req.json();

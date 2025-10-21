@@ -184,3 +184,157 @@ export async function getComics() {
 
   return comics;
 }
+
+const CreateAssetSchema = z.object({
+  filename: z.string(),
+  fileUrl: z.string().url(),
+  fileKey: z.string().optional(),
+  mimeType: z.string().optional(),
+  size: z.number().int().optional(),
+});
+
+export async function createAsset(data: z.infer<typeof CreateAssetSchema>) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const { filename, fileUrl, fileKey, mimeType, size } = CreateAssetSchema.parse(data);
+
+  const asset = await prisma.asset.create({
+    data: {
+      userId,
+      filename,
+      fileUrl,
+      fileKey,
+      mimeType,
+      size,
+    },
+  });
+
+  revalidatePath("/studio");
+  return { success: true, asset };
+}
+
+export async function getAssets() {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const assets = await prisma.asset.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return assets;
+}
+
+const CreateRevisionSchema = z.object({
+  pageId: z.string(),
+  snapshot: z.record(z.string(), z.unknown()),
+});
+
+export async function createRevision(data: z.infer<typeof CreateRevisionSchema>) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const { pageId, snapshot } = CreateRevisionSchema.parse(data);
+
+  // Verify page ownership
+  const page = await prisma.page.findUnique({
+    where: { id: pageId },
+    include: { comic: true },
+  });
+
+  if (!page || page.comic.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const revision = await prisma.revision.create({
+    data: {
+      pageId,
+      snapshot: JSON.stringify(snapshot),
+    },
+  });
+
+  return { success: true, revision };
+}
+
+export async function getRevisions(pageId: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  // Verify page ownership
+  const page = await prisma.page.findUnique({
+    where: { id: pageId },
+    include: { comic: true },
+  });
+
+  if (!page || page.comic.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const revisions = await prisma.revision.findMany({
+    where: { pageId },
+    orderBy: { createdAt: "desc" },
+    take: 10, // Last 10 revisions
+  });
+
+  return revisions;
+}
+
+export async function applyRevision(revisionId: string) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const revision = await prisma.revision.findUnique({
+    where: { id: revisionId },
+    include: {
+      page: {
+        include: { comic: true },
+      },
+    },
+  });
+
+  if (!revision || revision.page.comic.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+  // Parse the snapshot
+  const snapshot = JSON.parse(revision.snapshot);
+  const panels = snapshot.panels || [];
+
+  // Apply the snapshot to the page
+  for (const panelData of panels) {
+    await prisma.panel.upsert({
+      where: {
+        pageId_panelNum: {
+          pageId: revision.pageId,
+          panelNum: panelData.panelNum,
+        },
+      },
+      update: {
+        imageUrl: panelData.imageUrl,
+        prompt: panelData.prompt,
+        balloons: panelData.balloons,
+      },
+      create: {
+        pageId: revision.pageId,
+        panelNum: panelData.panelNum,
+        imageUrl: panelData.imageUrl,
+        prompt: panelData.prompt,
+        balloons: panelData.balloons,
+      },
+    });
+  }
+
+  revalidatePath("/studio");
+  return { success: true };
+}
