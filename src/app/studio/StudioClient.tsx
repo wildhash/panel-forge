@@ -6,13 +6,6 @@ import { PanelGrid } from "@/components/PanelGrid";
 import { PromptBar } from "@/components/PromptBar";
 import { PageToolbar } from "@/components/PageToolbar";
 
-interface Asset {
-  id: string;
-  filename: string;
-  fileUrl: string;
-  createdAt: Date;
-}
-
 interface Panel {
   panelNum: number;
   imageUrl?: string;
