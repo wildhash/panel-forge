@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import OpenAI from "openai";
-import { buildThreePanelPrompts, buildCharacterToken } from "@/lib/comic-continuity";
+import { buildThreePanelPrompts, buildCharacterToken, sanitizeStoryPrompt } from "@/lib/comic-continuity";
 
 const GenerateComicSchema = z.object({
   story: z.string().min(10).max(2000),
@@ -51,14 +51,21 @@ export async function POST(req: Request) {
     
     const { story, artStyle, characterDescription, hasReferenceImages, previousPanelUrls } = validationResult.data;
 
+    // Sanitize the story to reduce content moderation issues
+    const { sanitized: sanitizedStory, warnings } = sanitizeStoryPrompt(story);
+    
+    if (warnings.length > 0) {
+      console.log("📝 Story sanitization applied:", warnings);
+    }
+
     // Build character token for consistency
     const characterToken = buildCharacterToken(
       characterDescription || "the main character",
       hasReferenceImages
     );
 
-    // Generate prompts for all 3 panels
-    const panelPrompts = buildThreePanelPrompts(story, artStyle, characterToken);
+    // Generate prompts for all 3 panels using sanitized story
+    const panelPrompts = buildThreePanelPrompts(sanitizedStory, artStyle, characterToken);
 
     // Create a readable stream for real-time updates
     const encoder = new TextEncoder();
@@ -66,10 +73,16 @@ export async function POST(req: Request) {
       async start(controller) {
         try {
           // Send initial status
+          let initialMessage = "Starting comic generation...";
+          if (warnings.length > 0) {
+            initialMessage = `Auto-adjusted story for content safety. ${warnings.length} change(s) made. Starting generation...`;
+          }
+          
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ 
               progress: 0, 
-              message: "Starting comic generation..." 
+              message: initialMessage,
+              sanitizationWarnings: warnings.length > 0 ? warnings : undefined
             })}\n\n`)
           );
 
@@ -119,11 +132,18 @@ export async function POST(req: Request) {
               console.error(`❌ Panel ${i + 1} generation failed:`, error.message);
               console.error("Error details:", error.response?.data || error);
               
+              // Check if it's a content policy violation
+              let userMessage = error.message;
+              if (error.message?.includes('safety system') || error.message?.includes('content policy') || error.status === 400) {
+                userMessage = `Your story description was flagged by OpenAI's content safety system. Please try:\n\n• Use more neutral, descriptive language\n• Avoid words that might suggest violence or conflict\n• Focus on positive, creative storytelling\n• Try rephrasing with gentler terminology\n\nExample: Instead of "hackers punch villains", try "tech experts solve problems" or "heroes discover solutions"`;
+              }
+              
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify({ 
                   error: true,
-                  message: `Failed to generate panel ${i + 1}: ${error.message}`,
+                  message: userMessage,
                   panelNumber: i + 1,
+                  isSafetyError: error.message?.includes('safety system') || error.message?.includes('content policy'),
                   details: error.response?.data || error.message
                 })}\n\n`)
               );

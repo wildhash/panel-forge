@@ -167,3 +167,51 @@ export function validatePanelQuality(imageUrl: string): {
   };
 }
 
+/**
+ * Sanitize story prompts to reduce content moderation issues
+ */
+export function sanitizeStoryPrompt(prompt: string): {
+  sanitized: string;
+  warnings: string[];
+} {
+  const warnings: string[] = [];
+  let sanitized = prompt;
+  
+  // Replace potentially problematic words with safer alternatives
+  const replacements: Record<string, string> = {
+    'hacker': 'tech expert',
+    'hackers': 'tech experts',
+    'punch': 'confront',
+    'punching': 'confronting',
+    'fight': 'challenge',
+    'fighting': 'challenging',
+    'attack': 'approach',
+    'attacking': 'approaching',
+    'villain': 'challenger',
+    'villains': 'challengers',
+    'kill': 'defeat',
+    'killing': 'defeating',
+    'shoot': 'target',
+    'shooting': 'targeting',
+    'weapon': 'tool',
+    'weapons': 'tools',
+    'gun': 'device',
+    'guns': 'devices',
+    'sword': 'blade',
+    'swords': 'blades',
+    'blood': 'energy',
+    'violent': 'dynamic',
+    'violence': 'action',
+  };
+  
+  Object.entries(replacements).forEach(([problematic, safe]) => {
+    const regex = new RegExp(`\\b${problematic}\\b`, 'gi');
+    if (regex.test(sanitized)) {
+      sanitized = sanitized.replace(regex, safe);
+      warnings.push(`Replaced "${problematic}" with "${safe}" for content safety`);
+    }
+  });
+  
+  return { sanitized, warnings };
+}
+

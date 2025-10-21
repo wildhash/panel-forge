@@ -180,7 +180,15 @@ export default function CreatePage() {
               }
             } catch (error: any) {
               console.error("❌ Auto-generation error:", error);
-              alert(`Generation failed: ${error.message}\n\nPlease check:\n1. OpenAI API key is valid\n2. You have credits in your OpenAI account\n3. Check the browser console and terminal for detailed errors`);
+              
+              let errorMessage = error.message;
+              if (error.message?.includes('safety system') || error.message?.includes('content policy')) {
+                errorMessage = `⚠️ Content Safety Notice\n\n${error.message}\n\nTip: Try using more family-friendly, positive language in your story description.`;
+              } else {
+                errorMessage = `Generation failed: ${error.message}\n\nPlease check:\n1. OpenAI API key is valid\n2. You have credits in your OpenAI account\n3. Try different wording in your story\n4. Check the browser console for details`;
+              }
+              
+              alert(errorMessage);
               setGenerationStatus("");
               setIsGenerating(false);
               setPanels([
@@ -351,8 +359,14 @@ export default function CreatePage() {
     } catch (error: any) {
       console.error("❌ Generation error:", error);
       console.error("Error details:", error.response || error);
-      const errorMessage = error.message || "Generation failed";
-      alert(`Generation failed: ${errorMessage}\n\nPlease check:\n1. OpenAI API key is valid\n2. You have credits in your OpenAI account\n3. Check the browser console and terminal for detailed errors`);
+      
+      let errorMessage = error.message || "Generation failed";
+      if (errorMessage.includes('safety system') || errorMessage.includes('content policy')) {
+        alert(`⚠️ Content Safety Notice\n\n${errorMessage}\n\nTip: Try using more family-friendly, positive language in your story description.`);
+      } else {
+        alert(`Generation failed: ${errorMessage}\n\nPlease check:\n1. OpenAI API key is valid\n2. You have credits in your OpenAI account\n3. Try different wording in your story\n4. Check the browser console for details`);
+      }
+      
       setGenerationStatus("");
       setIsGenerating(false);
       setPanels([
@@ -823,14 +837,31 @@ export default function CreatePage() {
             )}
 
             {/* Tips Section */}
-            <div className="mt-8 p-6 border-2 border-gray-200 bg-gray-50">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-900 mb-4">Guidelines</h3>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>Be specific about setting, characters, and action</li>
-                <li>Think about visual storytelling in each panel</li>
-                <li>Follow three-act structure: setup, action, payoff</li>
-                <li>Describe distinctive features for character consistency</li>
+            <div className="mt-8 p-6 border-2 border-gray-200 bg-gray-50 rounded-xl">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-900 mb-4">✍️ Writing Guidelines</h3>
+              <ul className="space-y-2 text-sm text-gray-700 mb-4">
+                <li>✓ Be specific about setting, characters, and action</li>
+                <li>✓ Think about visual storytelling in each panel</li>
+                <li>✓ Follow three-act structure: setup, action, payoff</li>
+                <li>✓ Describe distinctive features for character consistency</li>
               </ul>
+              
+              <div className="mt-4 pt-4 border-t border-gray-300">
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-900 mb-2">⚠️ Content Guidelines</h4>
+                <p className="text-xs text-gray-600 mb-2">
+                  Use positive, family-friendly language. Avoid words that suggest violence, conflict, or danger.
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="bg-red-50 p-2 rounded">
+                    <span className="font-semibold text-red-700">❌ Avoid:</span>
+                    <p className="text-red-600 mt-1">hackers, punch, fight, attack, villains</p>
+                  </div>
+                  <div className="bg-green-50 p-2 rounded">
+                    <span className="font-semibold text-green-700">✓ Try:</span>
+                    <p className="text-green-600 mt-1">tech experts, discover, solve, help, heroes</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
