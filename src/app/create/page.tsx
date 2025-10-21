@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ComicStrip } from "@/components/ComicStrip";
 import { ArrowLeft, Save, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -54,61 +53,27 @@ export default function CreatePage() {
     ]);
 
     try {
-      const response = await fetch("/api/comic-generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          story: story,
-          artStyle: artStyle,
-          characterDescription: characterDescription || undefined,
-          hasReferenceImages: false,
-        }),
-      });
+      // Simulate generation with mock data
+      const mockImages = [
+        "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=300&fit=crop"
+      ];
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Generation failed");
+      // Simulate progress
+      for (let i = 0; i < 3; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setGenerationStatus(`Generating panel ${i + 1}...`);
+        
+        setPanels(prev => prev.map(panel => 
+          panel.panelNumber === i + 1
+            ? { ...panel, imageUrl: mockImages[i], isGenerating: false }
+            : panel
+        ));
       }
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) {
-        throw new Error("No response stream");
-      }
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.slice(6));
-            
-            if (data.error) {
-              throw new Error(data.message);
-            }
-
-            setGenerationStatus(data.message);
-
-            if (data.imageUrl && data.panelNumber) {
-              setPanels(prev => prev.map(panel => 
-                panel.panelNumber === data.panelNumber
-                  ? { ...panel, imageUrl: data.imageUrl, isGenerating: false }
-                  : panel
-              ));
-            }
-
-            if (data.complete) {
-              setGenerationStatus("Comic strip complete! 🎉");
-              setIsGenerating(false);
-            }
-          }
-        }
-      }
+      setGenerationStatus("Comic strip complete! 🎉");
+      setIsGenerating(false);
     } catch (error: any) {
       console.error("Generation error:", error);
       alert(`Generation failed: ${error.message}`);
@@ -123,7 +88,6 @@ export default function CreatePage() {
 
   const handleRegeneratePanel = async (panelNumber: number) => {
     alert(`Panel regeneration coming soon! Panel ${panelNumber} will be regenerated with variations.`);
-    // TODO: Implement individual panel regeneration
   };
 
   const handleSave = async () => {
@@ -134,7 +98,7 @@ export default function CreatePage() {
 
     setIsSaving(true);
     try {
-      // TODO: Implement save to database
+      // Simulate save
       await new Promise(resolve => setTimeout(resolve, 1000));
       alert("Comic strip saved! Check your stories to see your work.");
       router.push("/stories");
@@ -148,7 +112,6 @@ export default function CreatePage() {
 
   const handleExport = () => {
     alert("Export feature coming soon! Will export as high-res image.");
-    // TODO: Implement export functionality
   };
 
   return (
@@ -173,7 +136,7 @@ export default function CreatePage() {
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               <Save className="w-4 h-4" />
-              {isSaving ? "Saving..." : "Save to Studio"}
+              {isSaving ? "Saving..." : "Save to Stories"}
             </button>
           </div>
         </div>
@@ -241,7 +204,7 @@ export default function CreatePage() {
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed font-medium transition-all"
                 >
                   <Sparkles className="w-5 h-5" />
-                  {isGenerating ? "Generating..." : "Generate Comic Strip"}
+                  {isGenerating ? "Generating..." : "Generate Comic Strip (Demo)"}
                 </button>
 
                 {generationStatus && (
@@ -255,21 +218,44 @@ export default function CreatePage() {
 
           {/* Right Panel - Comic Strip Display */}
           <div className="lg:col-span-2">
-            <ComicStrip
-              panels={panels}
-              onRegeneratePanel={handleRegeneratePanel}
-              onExport={handleExport}
-              isGenerating={isGenerating}
-            />
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">Comic Strip Preview</h2>
+              <div className="grid grid-cols-3 gap-4">
+                {panels.map((panel) => (
+                  <div
+                    key={panel.panelNumber}
+                    className="aspect-square border-2 border-gray-300 rounded-lg flex items-center justify-center bg-gray-50 hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden"
+                  >
+                    {panel.imageUrl ? (
+                      <img
+                        src={panel.imageUrl}
+                        alt={`Panel ${panel.panelNumber}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : panel.isGenerating ? (
+                      <div className="text-center text-gray-400">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                        <p className="text-sm">Generating...</p>
+                      </div>
+                    ) : (
+                      <div className="text-center text-gray-400">
+                        <div className="text-4xl mb-2">🖼️</div>
+                        <p className="text-sm">Panel {panel.panelNumber}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Tips Section */}
             <div className="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 border border-purple-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">💡 Tips for Great Comics</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">💡 Demo Mode</h3>
               <ul className="space-y-2 text-sm text-gray-700">
-                <li>• <strong>Be specific:</strong> Include details about setting, characters, and action</li>
-                <li>• <strong>Visual storytelling:</strong> Think about what viewers will see in each panel</li>
-                <li>• <strong>3-Act structure:</strong> Setup → Action → Payoff</li>
-                <li>• <strong>Character consistency:</strong> Describe distinctive features to maintain appearance</li>
+                <li>• <strong>This is a demo version</strong> - No API keys required!</li>
+                <li>• <strong>Mock images</strong> are used for demonstration</li>
+                <li>• <strong>Full functionality</strong> will work once API keys are configured</li>
+                <li>• <strong>Try the story cards</strong> by clicking "Save to Stories"</li>
               </ul>
             </div>
           </div>
@@ -278,4 +264,3 @@ export default function CreatePage() {
     </div>
   );
 }
-

@@ -1,21 +1,10 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+"use client";
+
 import { StoriesDashboard } from "@/components/StoriesDashboard";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-const hasClerkKeys = 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
-
-export default async function StoriesPage() {
-  const { userId } = await auth();
-
-  if (!userId) {
-    redirect("/");
-  }
-
+export default function StoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -39,7 +28,6 @@ export default async function StoriesPage() {
               >
                 Create New Story
               </Link>
-              {hasClerkKeys && <UserButton />}
             </div>
           </div>
         </div>
