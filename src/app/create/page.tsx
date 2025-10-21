@@ -129,12 +129,17 @@ export default function CreatePage() {
                     setGenerationStatus(data.message);
 
                     if (data.imageUrl && data.panelNumber) {
+                      console.log(`✅ Received image for panel ${data.panelNumber}:`, data.imageUrl);
                       generatedPanels.push({ panelNumber: data.panelNumber, imageUrl: data.imageUrl });
-                      setPanels(prev => prev.map(panel => 
-                        panel.panelNumber === data.panelNumber
-                          ? { ...panel, imageUrl: data.imageUrl, isGenerating: false }
-                          : panel
-                      ));
+                      setPanels(prev => {
+                        const updated = prev.map(panel => 
+                          panel.panelNumber === data.panelNumber
+                            ? { ...panel, imageUrl: data.imageUrl, isGenerating: false }
+                            : panel
+                        );
+                        console.log('📊 Updated panels state:', updated);
+                        return updated;
+                      });
                     }
 
                     if (data.complete) {
@@ -297,12 +302,17 @@ export default function CreatePage() {
             setGenerationStatus(data.message);
 
             if (data.imageUrl && data.panelNumber) {
+              console.log(`✅ Received image for panel ${data.panelNumber}:`, data.imageUrl);
               generatedPanels.push({ panelNumber: data.panelNumber, imageUrl: data.imageUrl });
-              setPanels(prev => prev.map(panel => 
-                panel.panelNumber === data.panelNumber
-                  ? { ...panel, imageUrl: data.imageUrl, isGenerating: false }
-                  : panel
-              ));
+              setPanels(prev => {
+                const updated = prev.map(panel => 
+                  panel.panelNumber === data.panelNumber
+                    ? { ...panel, imageUrl: data.imageUrl, isGenerating: false }
+                    : panel
+                );
+                console.log('📊 Updated panels state:', updated);
+                return updated;
+              });
             }
 
             if (data.complete) {

@@ -78,6 +78,14 @@ export function ComicStrip({
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 33vw"
+                    unoptimized
+                    priority={panel.panelNumber === 1}
+                    onError={(e) => {
+                      console.error(`❌ Failed to load image for panel ${panel.panelNumber}:`, panel.imageUrl);
+                    }}
+                    onLoad={() => {
+                      console.log(`✅ Image loaded successfully for panel ${panel.panelNumber}`);
+                    }}
                   />
                   
                   {/* Regenerate/Iterate Button (shows on hover) */}
