@@ -11,23 +11,26 @@ datasource db {
 }
 
 model Comic {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  pages     Page[]
+  id                 String   @id @default(cuid())
+  userId             String
+  title              String
+  artStyle           String?  // Art style: classic, manga, graphic-novel, retro-pulp, minimalist
+  characterReference String?  // JSON string with character descriptions and reference image URLs
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  pages              Page[]
 }
 
 model Page {
-  id        String   @id @default(cuid())
-  comicId   String
-  comic     Comic    @relation(fields: [comicId], references: [id], onDelete: Cascade)
-  pageNum   Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  panels    Panel[]
-  revisions Revision[]
+  id         String   @id @default(cuid())
+  comicId    String
+  comic      Comic    @relation(fields: [comicId], references: [id], onDelete: Cascade)
+  pageNum    Int
+  stripOrder Int      @default(1) // Order of strips within a comic
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  panels     Panel[]
+  revisions  Revision[]
 
   @@unique([comicId, pageNum])
 }

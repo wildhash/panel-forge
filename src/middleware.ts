@@ -1,25 +1,6 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { clerkMiddleware } from '@clerk/nextjs/server';
 
-const isProtectedRoute = createRouteMatcher(['/studio(.*)'])
-
-// Check if Clerk keys are properly configured
-const hasClerkKeys = 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
-
-export default function middleware(req: NextRequest) {
-  // If Clerk is not configured, allow all routes
-  if (!hasClerkKeys) {
-    return NextResponse.next()
-  }
-  
-  // If Clerk is configured, use Clerk middleware for protected routes
-  return clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) await auth.protect()
-  })(req)
-}
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
@@ -28,4 +9,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-}
+};

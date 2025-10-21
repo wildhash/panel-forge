@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from '@clerk/nextjs'
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs';
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Panel Forge - Turn photos into comics",
-  description: "Turn your photos and prompts into editable, multi-panel comics in minutes.",
+  title: "Panel Forge - AI Comic Creator",
+  description: "Create a comic in an afternoon. Turn your one-line idea into a finished, print-ready comic strip with AI.",
 };
 
 export default function RootLayout({
@@ -12,21 +19,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hasClerkKeys = 
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
-  
   return (
-    <html lang="en">
-      <body className="antialiased">
-        {hasClerkKeys ? (
-          <ClerkProvider>
-            {children}
-          </ClerkProvider>
-        ) : (
-          children
-        )}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className="antialiased">
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

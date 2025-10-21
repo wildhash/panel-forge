@@ -1,14 +1,10 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { UploadDropzone } from "@/components/UploadDropzone";
 import { PanelGrid } from "@/components/PanelGrid";
 import { PromptBar } from "@/components/PromptBar";
 import { PageToolbar } from "@/components/PageToolbar";
-
-const hasClerkKeys = 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
 
 export default async function StudioPage() {
   const { userId } = await auth();
@@ -24,7 +20,7 @@ export default async function StudioPage() {
           <h1 className="text-2xl font-bold text-gray-900">Panel Forge Studio</h1>
           <div className="flex items-center gap-4">
             <PageToolbar />
-            {hasClerkKeys && <UserButton />}
+            <UserButton />
           </div>
         </div>
       </header>
