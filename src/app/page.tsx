@@ -81,7 +81,7 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Panel Forge</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Story Forge</h1>
           <div className="flex items-center gap-3">
             <SignedOut>
               <SignInButton mode="modal">
@@ -100,7 +100,13 @@ export default function HomePage() {
                 href="/stories"
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
-                My Stories
+                My Comics
+              </Link>
+              <Link
+                href="/novels"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
+                My Novels
               </Link>
               <Link
                 href="/create"
@@ -125,7 +131,7 @@ export default function HomePage() {
           <div className="opacity-0 h-0">hidden</div>
           <BlurFade delay={0.25 * 2} inView>
             <span className="animate-fade-in font-[Outfit] text-[16px] font-normal text-[#737880] sm:text-[20px]">
-              Ready to turn your story into a comic?
+              Ready to turn your story into comics or novels?
             </span>
           </BlurFade>
         </header>
