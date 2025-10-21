@@ -5,10 +5,11 @@ import OpenAI from "openai";
 import { buildThreePanelPrompts, buildCharacterToken } from "@/lib/comic-continuity";
 
 const GenerateComicSchema = z.object({
-  story: z.string().min(10).max(500),
+  story: z.string().min(10).max(2000),
   artStyle: z.enum(['classic', 'manga', 'graphic-novel', 'retro-pulp', 'minimalist']),
   characterDescription: z.string().optional(),
   hasReferenceImages: z.boolean().default(false),
+  previousPanelUrls: z.array(z.string().url()).optional(),
 });
 
 // Initialize OpenAI client
@@ -37,7 +38,18 @@ export async function POST(req: Request) {
     console.log("✅ OpenAI API key found, length:", process.env.OPENAI_API_KEY?.length);
 
     const body = await req.json();
-    const { story, artStyle, characterDescription, hasReferenceImages } = GenerateComicSchema.parse(body);
+    console.log("📥 Received request body:", body);
+    
+    const validationResult = GenerateComicSchema.safeParse(body);
+    if (!validationResult.success) {
+      console.error("❌ Validation failed:", validationResult.error.issues);
+      return NextResponse.json(
+        { error: "Invalid request", details: validationResult.error.issues },
+        { status: 400 }
+      );
+    }
+    
+    const { story, artStyle, characterDescription, hasReferenceImages, previousPanelUrls } = validationResult.data;
 
     // Build character token for consistency
     const characterToken = buildCharacterToken(

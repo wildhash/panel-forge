@@ -169,7 +169,7 @@ export function NovelCard({ novel, onEdit, onDelete, onView }: NovelCardProps) {
           </span>
           
           <Link
-            href={`/novel/edit/${novel.id}`}
+            href={`/novels/${novel.id}`}
             className="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
             {novel.status === 'completed' ? 'Read' : 'Continue Writing'}
