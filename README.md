@@ -29,7 +29,9 @@ Turn your photos + prompts into editable, multi-panel comics in minutes.
 - Node.js 18+ 
 - npm or yarn
 
-### Installation
+### Quick Start (Development Mode)
+
+The app can run without any external services configured for local development:
 
 1. Clone the repository:
 ```bash
@@ -45,23 +47,46 @@ npm install
 3. Set up environment variables:
 ```bash
 cp .env.example .env
+# The app will work with defaults for local development
 ```
-
-Then edit `.env` and add your actual keys:
-- Get Clerk keys from [https://clerk.com](https://clerk.com)
-- Get UploadThing keys from [https://uploadthing.com](https://uploadthing.com)
 
 4. Set up the database:
 ```bash
-npx prisma migrate dev
+npm run db:migrate
 ```
 
-5. Run the development server:
+5. (Optional) Seed demo data:
+```bash
+npm run db:seed
+```
+
+6. Run the development server:
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Production Setup
+
+For production use with authentication and file uploads:
+
+1. **Configure Clerk (Authentication)**
+   - Sign up at [https://clerk.com](https://clerk.com)
+   - Create a new application
+   - Copy your publishable and secret keys to `.env`
+
+2. **Configure UploadThing (File Uploads)**
+   - Sign up at [https://uploadthing.com](https://uploadthing.com)
+   - Create a new app
+   - Copy your secret and app ID to `.env`
+
+3. **Configure AI Generation (Optional)**
+   - For OpenAI DALL-E: Get API key from [https://platform.openai.com](https://platform.openai.com)
+   - For Replicate: Get API key from [https://replicate.com](https://replicate.com)
+   - Add keys to `.env` to enable real AI generation
+
+Without AI keys, the app runs in **fallback mode** with placeholder images.
 
 ## Project Structure
 
@@ -118,9 +143,58 @@ npm run build
 # Run linter
 npm run lint
 
-# Run Prisma Studio (database GUI)
-npx prisma studio
+# Database commands
+npm run db:migrate      # Run migrations
+npm run db:generate     # Generate Prisma client
+npm run db:studio       # Open Prisma Studio (database GUI)
+npm run db:seed         # Seed demo data
 ```
+
+## Features Walkthrough
+
+### 1. Upload Images
+- Click "Upload Images" to add photos to your library
+- Uploaded images are saved to your account
+- Images persist across sessions
+
+### 2. Create Panels
+- Drag images from your upload library onto the panel grid
+- Each panel can have different images
+- Click a panel to select it for editing
+
+### 3. Add Speech Balloons
+- Select a panel to open the balloon editor
+- Click "Add Balloon" to create speech bubbles
+- Edit text and position for each balloon
+- Balloons are saved with the panel
+
+### 4. Generate AI Art
+- Enter a prompt in the Prompt Generator
+- Click "Generate" to create AI images (requires API keys)
+- In fallback mode, placeholder images are created
+
+### 5. Save Your Work
+- Click "Save Page" to persist your comic to the database
+- All panels and balloons are saved automatically
+- Revisions are tracked for undo functionality
+
+## Security Features
+
+- **Rate Limiting**: API endpoints are rate-limited (10 requests/minute per user)
+- **File Validation**: Only allowed image types (JPEG, PNG, WebP, GIF) up to 4MB
+- **Authentication**: Protected routes require sign-in (when Clerk is configured)
+- **User Isolation**: All queries filter by userId to ensure data privacy
+
+## Fallback Mode
+
+Without external API keys, Panel Forge runs in **fallback mode**:
+- ✅ Full UI functionality
+- ✅ Image uploads work (stored locally)
+- ✅ Panel editing and balloons work
+- ✅ Page saving and database features work
+- ⚠️ AI generation returns placeholder images with your prompt text
+
+This allows development and testing without external dependencies.
 
 ## Deploy on Vercel
 
