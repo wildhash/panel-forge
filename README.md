@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Panel Forge
+
+Turn your photos + prompts into editable, multi-panel comics in minutes.
+
+## Features
+
+- 🎨 **Comic Studio**: Interactive panel-based comic editor
+- 📸 **Image Upload**: Upload your own images with UploadThing integration
+- ✨ **AI Generation**: Generate and iterate on comic panels with AI prompts
+- 💬 **Speech Balloons**: Add and edit text balloons on your panels
+- 🔐 **Authentication**: Secure user authentication with Clerk
+- 💾 **Database**: SQLite database with Prisma ORM
+- 🎯 **Type Safety**: Full TypeScript support with Zod validation
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Authentication**: Clerk
+- **Database**: Prisma with SQLite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **File Upload**: UploadThing
+- **Validation**: Zod
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/wildhash/panel-forge.git
+cd panel-forge
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Then edit `.env` and add your actual keys:
+- Get Clerk keys from [https://clerk.com](https://clerk.com)
+- Get UploadThing keys from [https://uploadthing.com](https://uploadthing.com)
 
-## Learn More
+4. Set up the database:
+```bash
+npx prisma migrate dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
+
+```
+panel-forge/
+├── src/
+│   ├── app/
+│   │   ├── actions/          # Server actions
+│   │   ├── api/              # API routes
+│   │   │   ├── generate/     # AI generation endpoint
+│   │   │   ├── iterate/      # Panel iteration endpoint
+│   │   │   ├── plan/         # Comic planning endpoint
+│   │   │   └── uploadthing/  # File upload endpoint
+│   │   ├── studio/           # Protected studio page
+│   │   ├── layout.tsx        # Root layout
+│   │   └── page.tsx          # Landing page
+│   ├── components/           # React components
+│   │   ├── BalloonEditor.tsx
+│   │   ├── ComicViewer.tsx
+│   │   ├── PageToolbar.tsx
+│   │   ├── PanelGrid.tsx
+│   │   ├── PromptBar.tsx
+│   │   └── UploadDropzone.tsx
+│   └── lib/                  # Utility functions
+├── prisma/
+│   └── schema.prisma         # Database schema
+└── public/                   # Static assets
+```
+
+## Database Models
+
+- **Comic**: User's comic projects
+- **Page**: Pages within a comic
+- **Panel**: Individual panels with images and prompts
+- **Asset**: Uploaded files and images
+- **Revision**: Version history for pages
+
+## API Routes
+
+- `POST /api/plan` - Generate a comic layout plan
+- `POST /api/generate` - Generate panel images (streaming)
+- `POST /api/iterate` - Iterate on existing panels (streaming)
+- `POST /api/uploadthing` - Handle file uploads
+
+## Development
+
+```bash
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run linter
+npm run lint
+
+# Run Prisma Studio (database GUI)
+npx prisma studio
+```
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## License
+
+MIT
