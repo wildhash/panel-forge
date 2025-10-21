@@ -45,3 +45,6 @@ next-env.d.ts
 # database
 *.db
 *.db-journal
+
+# clerk configuration (can include secrets)
+/.clerk/

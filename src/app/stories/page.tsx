@@ -1,0 +1,54 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { UserButton } from "@clerk/nextjs";
+import { StoriesDashboard } from "@/components/StoriesDashboard";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+
+const hasClerkKeys = 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
+
+export default async function StoriesPage() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/");
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link 
+                href="/" 
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                Home
+              </Link>
+              <h1 className="text-2xl font-bold text-gray-900">Panel Forge</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/create"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              >
+                Create New Story
+              </Link>
+              {hasClerkKeys && <UserButton />}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <StoriesDashboard />
+      </main>
+    </div>
+  );
+}
