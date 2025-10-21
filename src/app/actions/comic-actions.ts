@@ -184,3 +184,48 @@ export async function getComics() {
 
   return comics;
 }
+
+const CreateAssetSchema = z.object({
+  filename: z.string(),
+  fileUrl: z.string().url(),
+  fileKey: z.string().optional(),
+  mimeType: z.string().optional(),
+  size: z.number().int().optional(),
+});
+
+export async function createAsset(data: z.infer<typeof CreateAssetSchema>) {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const { filename, fileUrl, fileKey, mimeType, size } = CreateAssetSchema.parse(data);
+
+  const asset = await prisma.asset.create({
+    data: {
+      userId,
+      filename,
+      fileUrl,
+      fileKey,
+      mimeType,
+      size,
+    },
+  });
+
+  revalidatePath("/studio");
+  return { success: true, asset };
+}
+
+export async function getAssets() {
+  const { userId } = await auth();
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const assets = await prisma.asset.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return assets;
+}
