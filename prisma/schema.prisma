@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Comic {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pages     Page[]
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  comicId   String
+  comic     Comic    @relation(fields: [comicId], references: [id], onDelete: Cascade)
+  pageNum   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  panels    Panel[]
+  revisions Revision[]
+
+  @@unique([comicId, pageNum])
+}
+
+model Panel {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  panelNum  Int
+  imageUrl  String?
+  prompt    String?
+  balloons  String?  // JSON string storing balloon data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([pageId, panelNum])
+}
+
+model Asset {
+  id        String   @id @default(cuid())
+  userId    String
+  filename  String
+  fileUrl   String
+  fileKey   String?
+  mimeType  String?
+  size      Int?
+  createdAt DateTime @default(now())
+}
+
+model Revision {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  snapshot  String   // JSON string storing the page state
+  createdAt DateTime @default(now())
+}
