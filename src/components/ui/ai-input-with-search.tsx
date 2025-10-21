@@ -15,6 +15,8 @@ interface AIInputWithSearchProps {
   maxHeight?: number;
   onSubmit?: (value: string, files: File[]) => void;
   onFileSelect?: (file: File) => void;
+  initialValue?: string;
+  disabled?: boolean;
   className?: string;
 }
 
@@ -25,9 +27,11 @@ export function AIInputWithSearch({
   maxHeight = 164,
   onSubmit,
   onFileSelect,
+  initialValue = "",
+  disabled = false,
   className
 }: AIInputWithSearchProps) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(initialValue);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
@@ -38,9 +42,10 @@ export function AIInputWithSearch({
   const handleSubmit = () => {
     if (value.trim() || selectedFiles.length > 0) {
       onSubmit?.(value, selectedFiles);
-      setValue("");
-      setSelectedFiles([]);
-      setPreviewUrls([]);
+      // Don't clear files - let parent component manage them
+      // setValue("");
+      // setSelectedFiles([]);
+      // setPreviewUrls([]);
       adjustHeight(true);
     }
   };
@@ -102,6 +107,7 @@ export function AIInputWithSearch({
               placeholder={placeholder}
               className="w-full rounded-xl rounded-b-none px-4 py-3 bg-black/5 dark:bg-white/5 border-none dark:text-white placeholder:text-black/70 dark:placeholder:text-white/70 resize-none focus-visible:ring-0 leading-[1.2]"
               ref={textareaRef}
+              disabled={disabled}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -117,12 +123,16 @@ export function AIInputWithSearch({
 
           <div className="h-12 bg-black/5 dark:bg-white/5 rounded-b-xl">
             <div className="absolute left-3 bottom-3 flex items-center gap-2">
-              <label className="cursor-pointer rounded-lg p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+              <label className={cn(
+                "rounded-lg p-2 bg-black/5 dark:bg-white/5 transition-colors",
+                disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-black/10 dark:hover:bg-white/10"
+              )}>
                 <input 
                   type="file" 
                   className="hidden"
                   accept="image/*"
                   multiple
+                  disabled={disabled}
                   onChange={handleFileChange}
                 />
                 <Paperclip className="w-4 h-4 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white transition-colors" />

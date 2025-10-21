@@ -79,13 +79,17 @@ export default function CreatePage() {
             ]);
 
             try {
+              const hasRefImages = characterReferenceImages.length > 0;
+              console.log("📸 Auto-gen: Character reference images:", characterReferenceImages.length, "files");
+              console.log("📸 Auto-gen: Has reference images:", hasRefImages);
+              
               const requestBody = {
                 story: storyParam,
                 artStyle: styleParam,
                 characterDescription: characterDescription || undefined,
-                hasReferenceImages: characterReferenceImages.length > 0,
+                hasReferenceImages: hasRefImages,
               };
-              console.log("📤 Request body:", requestBody);
+              console.log("📤 Auto-gen Request body:", requestBody);
               
               const response = await fetch("/api/comic-generate", {
                 method: "POST",
@@ -251,11 +255,15 @@ export default function CreatePage() {
     }
 
     try {
+      const hasRefImages = characterReferenceImages.length > 0;
+      console.log("📸 Character reference images:", characterReferenceImages.length, "files");
+      console.log("📸 Has reference images:", hasRefImages);
+      
       const requestBody = {
         story: story,
         artStyle: artStyle,
         characterDescription: enhancedCharacterDescription || undefined,
-        hasReferenceImages: characterReferenceImages.length > 0,
+        hasReferenceImages: hasRefImages,
         previousPanelUrls: previousPanelUrls.length > 0 ? previousPanelUrls : undefined,
       };
       console.log("📤 Request body:", requestBody);
@@ -596,7 +604,15 @@ export default function CreatePage() {
   };
 
   const handleFileUpload = (files: File[]) => {
-    setCharacterReferenceImages(files);
+    console.log("📎 handleFileUpload called with", files.length, "files");
+    setCharacterReferenceImages(prevFiles => {
+      // Merge with existing files, avoiding duplicates
+      const existingNames = prevFiles.map(f => f.name);
+      const newFiles = files.filter(f => !existingNames.includes(f.name));
+      const merged = [...prevFiles, ...newFiles];
+      console.log("📎 Total reference images:", merged.length);
+      return merged;
+    });
     if (files.length > 0) {
       setGenerationStatus(`${files.length} character reference image(s) uploaded. These will be used for character consistency.`);
     }
@@ -711,21 +727,27 @@ export default function CreatePage() {
                     </p>
                   </div>
                   {characterReferenceImages.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {characterReferenceImages.map((file, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-700">
-                          <span>{file.name}</span>
-                          <button
-                            onClick={() => {
-                              setCharacterReferenceImages(prev => prev.filter((_, i) => i !== idx));
-                            }}
-                            className="text-gray-500 hover:text-gray-900"
-                            aria-label={`Remove ${file.name}`}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold text-green-700 mb-2">
+                        ✓ {characterReferenceImages.length} reference image{characterReferenceImages.length > 1 ? 's' : ''} uploaded
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {characterReferenceImages.map((file, idx) => (
+                          <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 rounded-full text-xs text-green-800">
+                            <span>📷 {file.name.substring(0, 20)}{file.name.length > 20 ? '...' : ''}</span>
+                            <button
+                              onClick={() => {
+                                console.log(`🗑️ Removing file: ${file.name}`);
+                                setCharacterReferenceImages(prev => prev.filter((_, i) => i !== idx));
+                              }}
+                              className="text-green-600 hover:text-green-900 font-bold"
+                              aria-label={`Remove ${file.name}`}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
