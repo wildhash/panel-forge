@@ -99,20 +99,22 @@ export function buildPanelPrompt(
   const basePrompt = `
 Create a comic book panel in ${style.stylePrompt}.
 
-PANEL ${panelNumber} - ${composition.shotType.toUpperCase()}:
+PANEL ${panelNumber}/3 - ${composition.shotType.toUpperCase()}:
 ${composition.description}
-Camera: ${composition.cameraAngle}
+Camera angle: ${composition.cameraAngle}
 
-STORY CONTEXT: ${storyPrompt}
+STORY: ${storyPrompt}
 
-CHARACTER CONSISTENCY: ${characterToken}
+CHARACTER APPEARANCE (keep consistent): ${characterToken}
 
-IMPORTANT: 
-- This is panel ${panelNumber} of a 3-panel comic strip
-- Maintain visual continuity with other panels
-- No text, speech bubbles, or captions in the image
-- Clear comic panel framing
-- Professional comic book quality
+TECHNICAL REQUIREMENTS:
+- Panel ${panelNumber} of a 3-panel horizontal comic strip sequence
+- Maintain exact character appearance across all panels
+- Same art style, color palette, and line quality as other panels
+- NO text, speech bubbles, captions, or sound effects in the image
+- Leave room at edges for panel borders
+- Professional comic book illustration quality
+- Clear, legible, high-contrast composition
 `.trim();
 
   return basePrompt;
@@ -126,10 +128,10 @@ export function buildThreePanelPrompts(
   artStyleKey: string,
   characterToken: string
 ): string[] {
-  // Break story into 3 acts
-  const panel1Focus = `${storyPrompt}. Panel 1: Setting the scene and introducing the situation.`;
-  const panel2Focus = `${storyPrompt}. Panel 2: The main action or conflict happening.`;
-  const panel3Focus = `${storyPrompt}. Panel 3: The conclusion or reaction to what happened.`;
+  // Break story into 3 acts with clear progression
+  const panel1Focus = `${storyPrompt}. PANEL 1 FOCUS: Establish the scene and introduce characters/setting.`;
+  const panel2Focus = `${storyPrompt}. PANEL 2 FOCUS: Show the main action, conflict, or key moment unfolding.`;
+  const panel3Focus = `${storyPrompt}. PANEL 3 FOCUS: Depict the outcome, reaction, or payoff to the action.`;
   
   return [
     buildPanelPrompt(1, panel1Focus, artStyleKey, characterToken),

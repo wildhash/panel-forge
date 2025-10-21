@@ -14,10 +14,10 @@ export default async function StudioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Panel Forge Studio</h1>
+    <div className="min-h-screen bg-white">
+      <header className="border-b bg-white" role="banner">
+        <div className="container-xl mx-auto px-8 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-semibold text-gray-900">Studio</h1>
           <div className="flex items-center gap-4">
             <PageToolbar />
             <UserButton />
@@ -25,8 +25,8 @@ export default async function StudioPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
+      <main className="container-xl mx-auto px-8 py-8" role="main">
+        <div className="space-y-8">
           <UploadDropzone />
           <PromptBar />
           <PanelGrid />

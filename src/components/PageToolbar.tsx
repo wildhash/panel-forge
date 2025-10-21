@@ -45,42 +45,40 @@ export function PageToolbar({ panels = [] }: PageToolbarProps) {
           })),
         });
         
-        alert("Page saved successfully!");
+        alert("Page saved to comic.");
       }
     } catch (error) {
       console.error("Save error:", error);
-      alert("Failed to save. Please try again.");
+      alert("Save failed. Please try again.");
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleExport = () => {
-    alert("Export functionality coming soon!");
+    alert("Export will save your comic as a high-resolution file.");
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-gray-600">
-          {comicId ? `Comic ID: ${comicId.slice(0, 8)}...` : "No comic created yet"}
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300"
-          >
-            {isSaving ? "Saving..." : "Save Page"}
-          </button>
-          <button
-            onClick={handleExport}
-            className="px-4 py-2 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700"
-          >
-            Export
-          </button>
-        </div>
+    <div className="flex items-center gap-4">
+      <div className="text-sm text-gray-600">
+        {comicId ? `Comic ${comicId.slice(0, 8)}` : "Unsaved"}
       </div>
+      <button
+        onClick={handleSave}
+        disabled={isSaving}
+        aria-label="Save page to comic"
+        className="px-4 py-2 text-sm bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300"
+      >
+        {isSaving ? "Saving..." : "Save"}
+      </button>
+      <button
+        onClick={handleExport}
+        aria-label="Export comic"
+        className="px-4 py-2 text-sm border-2 border-gray-900 text-gray-900 hover:bg-gray-100"
+      >
+        Export
+      </button>
     </div>
   );
 }

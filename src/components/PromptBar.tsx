@@ -22,31 +22,32 @@ export function PromptBar() {
       }
 
       await response.json();
-      alert("Generation complete! Check your panels.");
+      alert("Panel generated. Check your comic.");
     } catch (error) {
       console.error("Generation error:", error);
-      alert("Failed to generate. Please try again.");
+      alert("Generation failed. Please try again.");
     } finally {
       setIsGenerating(false);
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Prompt Generator</h2>
+    <div className="border-2 border-gray-200 p-6">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-900 mb-6">Generate Panel</h2>
       <div className="flex gap-2">
         <input
           type="text"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Describe what you want to generate..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 border-2 border-gray-200 focus:border-gray-900 focus:outline-none"
           disabled={isGenerating}
         />
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !prompt.trim()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          aria-label="Generate panel from prompt"
+          className="px-6 py-2 bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm"
         >
           {isGenerating ? "Generating..." : "Generate"}
         </button>

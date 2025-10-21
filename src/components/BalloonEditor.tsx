@@ -50,53 +50,55 @@ export function BalloonEditor({ balloons = [], onBalloonsChange }: BalloonEditor
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md border-t-2 border-blue-200">
+    <div className="border-t-2 border-gray-200 pt-6 mt-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Speech Balloons</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-900">Speech Balloons</h3>
         <button
           onClick={addBalloon}
-          className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          aria-label="Add speech balloon to panel"
+          className="px-4 py-2 text-sm bg-gray-900 text-white hover:bg-gray-800"
         >
           Add Balloon
         </button>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {balloons.map((balloon) => (
-          <div key={balloon.id} className="border border-gray-200 p-3 rounded">
-            <div className="flex gap-2 items-start mb-2">
+          <div key={balloon.id} className="border-2 border-gray-200 p-4">
+            <div className="flex gap-2 items-start mb-3">
               <input
                 type="text"
                 value={balloon.text}
                 onChange={(e) => updateBalloonText(balloon.id, e.target.value)}
                 placeholder="Balloon text"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border-2 border-gray-200 focus:border-gray-900 focus:outline-none"
               />
               <button
                 onClick={() => deleteBalloon(balloon.id)}
-                className="px-3 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                aria-label="Delete balloon"
+                className="px-3 py-2 text-sm border-2 border-gray-900 text-gray-900 hover:bg-gray-100"
               >
                 Delete
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="text-gray-600">X Position (%)</label>
+                <label className="text-gray-700 font-medium block mb-1">X Position (%)</label>
                 <input
                   type="number"
                   value={balloon.x}
                   onChange={(e) => updateBalloonPosition(balloon.id, 'x', Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                  className="w-full px-2 py-1 border-2 border-gray-200 focus:border-gray-900 focus:outline-none"
                   min="0"
                   max="100"
                 />
               </div>
               <div>
-                <label className="text-gray-600">Y Position (%)</label>
+                <label className="text-gray-700 font-medium block mb-1">Y Position (%)</label>
                 <input
                   type="number"
                   value={balloon.y}
                   onChange={(e) => updateBalloonPosition(balloon.id, 'y', Number(e.target.value))}
-                  className="w-full px-2 py-1 border border-gray-300 rounded"
+                  className="w-full px-2 py-1 border-2 border-gray-200 focus:border-gray-900 focus:outline-none"
                   min="0"
                   max="100"
                 />
@@ -105,7 +107,7 @@ export function BalloonEditor({ balloons = [], onBalloonsChange }: BalloonEditor
           </div>
         ))}
         {balloons.length === 0 && (
-          <p className="text-gray-500 text-sm">No balloons yet. Click &ldquo;Add Balloon&rdquo; to start.</p>
+          <p className="text-gray-600 text-sm">No balloons. Click Add Balloon to start.</p>
         )}
       </div>
     </div>

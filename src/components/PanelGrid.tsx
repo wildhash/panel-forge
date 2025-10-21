@@ -66,14 +66,14 @@ export function PanelGrid({ onPanelUpdate }: PanelGridProps) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Comic Panels</h2>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+    <div className="border-2 border-gray-200 p-6">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-900 mb-6">Comic Panels</h2>
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {panels.map((panel) => (
-          <div
+          <button
             key={panel.panelNum}
-            className={`aspect-square border-2 rounded-lg flex items-center justify-center bg-gray-50 hover:border-blue-400 transition-colors cursor-pointer relative overflow-hidden ${
-              selectedPanel === panel.panelNum ? "border-blue-600 ring-2 ring-blue-300" : "border-gray-300"
+            className={`aspect-square border-2 flex items-center justify-center bg-gray-50 hover:border-gray-900 cursor-pointer relative overflow-hidden ${
+              selectedPanel === panel.panelNum ? "border-gray-900" : "border-gray-300"
             }`}
             onClick={() => handlePanelClick(panel.panelNum)}
             onDragOver={(e) => e.preventDefault()}
@@ -84,6 +84,8 @@ export function PanelGrid({ onPanelUpdate }: PanelGridProps) {
                 handleAssetDrop(panel.panelNum, imageUrl);
               }
             }}
+            aria-label={`Panel ${panel.panelNum}${selectedPanel === panel.panelNum ? ' (selected)' : ''}`}
+            aria-pressed={selectedPanel === panel.panelNum}
           >
             {panel.imageUrl ? (
               <Image
@@ -93,13 +95,12 @@ export function PanelGrid({ onPanelUpdate }: PanelGridProps) {
                 className="object-cover"
               />
             ) : (
-              <div className="text-center text-gray-400">
-                <div className="text-4xl mb-2">🖼️</div>
-                <p className="text-sm">Panel {panel.panelNum}</p>
-                <p className="text-xs mt-1">Drop image here</p>
+              <div className="text-center text-gray-500">
+                <p className="text-sm font-medium">Panel {panel.panelNum}</p>
+                <p className="text-xs mt-2">Drop image here</p>
               </div>
             )}
-          </div>
+          </button>
         ))}
       </div>
       {selectedPanel !== null && (

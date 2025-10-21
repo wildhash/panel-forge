@@ -4,43 +4,39 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AIInputWithSearch } from "@/components/ui/ai-input-with-search";
-import { BlurFade } from "@/components/ui/blur-fade"
-import Image from 'next/image';
-import { cn } from "@/lib/utils";
-import { DotPattern } from "@/components/ui/dot-pattern";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
-// Comic art style examples - using real comic book style images
+// Comic art style examples - using appropriate stock images
 const artStyles = [
   { 
     key: 'classic',
     title: 'Classic Comic Book',
     description: 'Bold lines, vibrant colors',
-    imageSrc: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=400&h=600&fit=crop'
+    imageSrc: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=300&h=400&fit=crop&q=80'
   },
   { 
     key: 'manga',
     title: 'Manga Style',
     description: 'Screentone shading, dynamic angles',
-    imageSrc: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=600&fit=crop'
+    imageSrc: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=300&h=400&fit=crop&q=80'
   },
   { 
     key: 'graphic-novel',
     title: 'Graphic Novel',
     description: 'Realistic, muted tones',
-    imageSrc: 'https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?w=400&h=600&fit=crop'
+    imageSrc: 'https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?w=300&h=400&fit=crop&q=80'
   },
   { 
     key: 'retro-pulp',
     title: 'Retro Pulp',
     description: 'Vintage comic aesthetic',
-    imageSrc: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=400&h=600&fit=crop'
+    imageSrc: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=300&h=400&fit=crop&q=80'
   },
   { 
     key: 'minimalist',
     title: 'Minimalist Line Art',
     description: 'Simple, clean lines',
-    imageSrc: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&h=600&fit=crop'
+    imageSrc: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=300&h=400&fit=crop&q=80'
   },
 ];
 
@@ -48,49 +44,40 @@ export default function HomePage() {
   const router = useRouter();
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   
-  // Determine greeting based on current hour
-  const hour = new Date().getHours();
-  let timeOfDay;
-  if (hour < 12) timeOfDay = 'Morning';
-  else if (hour < 18) timeOfDay = 'Afternoon';
-  else timeOfDay = 'Evening';
-  
   const handleStartCreating = (story: string, files: File[]) => {
     if (!story.trim()) {
-      alert("Please describe your comic story first!");
+      alert("Enter a story description to continue.");
+      return;
+    }
+
+    if (!selectedStyle) {
+      alert("Select an art style before creating.");
       return;
     }
     
     // Navigate to create page with story and style
-    const style = selectedStyle || 'classic';
     const params = new URLSearchParams({
       story: story,
-      style: style
+      style: selectedStyle
     });
     router.push(`/create?${params.toString()}`);
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background">
-      <DotPattern
-        className={cn(
-          "[mask-image:radial-gradient(300px_circle_at_center,white,transparent)]",
-        )}
-      />
-      
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="border-b bg-white/80 backdrop-blur-sm relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Panel Forge</h1>
+      <nav className="border-b border-gray-200 bg-white" role="navigation" aria-label="Main navigation">
+        <div className="container-xl mx-auto px-8 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-semibold text-gray-900">Panel Forge</h1>
           <div className="flex items-center gap-3">
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                <button className="px-5 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors rounded-full">
                   Sign In
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                <button className="px-5 py-2 text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 hover:shadow-lg active:scale-95 rounded-full">
                   Sign Up
                 </button>
               </SignUpButton>
@@ -98,9 +85,9 @@ export default function HomePage() {
             <SignedIn>
               <Link
                 href="/create"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                className="px-5 py-2 text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 hover:shadow-lg active:scale-95 rounded-full"
               >
-                Create Comic
+                Create
               </Link>
               <UserButton />
             </SignedIn>
@@ -108,24 +95,19 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <div className="p-8 relative z-10">
+      <main className="px-8 py-24">
         {/* Header */}
-        <header className="text-center mb-12">
-          <BlurFade delay={0.25} inView>
-            <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-              {`Good ${timeOfDay}, Creator`}
-            </h2>
-          </BlurFade>
-          <div className="opacity-0 h-0">hidden</div>
-          <BlurFade delay={0.25 * 2} inView>
-            <span className="animate-fade-in font-[Outfit] text-[16px] font-normal text-[#737880] sm:text-[20px]">
-              Ready to turn your story into a comic?
-            </span>
-          </BlurFade>
+        <header className="container-lg mb-24" role="banner">
+          <h2 className="text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Create Comic Strips<br />with AI
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
+            Turn your story into a three-panel comic strip. Choose an art style, describe your story, and generate professional comic panels in minutes.
+          </p>
         </header>
 
         {/* Input Box */}
-        <div className="max-w-2xl mx-auto mb-16">
+        <div className="container-md mx-auto mb-16">
           <AIInputWithSearch 
             placeholder="Describe your comic story... (e.g., 'A superhero discovers their powers for the first time')"
             onSubmit={handleStartCreating}
@@ -141,81 +123,64 @@ export default function HomePage() {
         </div>
 
         {/* Art Styles Section */}
-        <section className="max-w-6xl mx-auto">
-          <BlurFade delay={0.25 * 3} inView>
-            <h2 className="text-2xl font-semibold mb-6">Choose Your Art Style</h2>
-          </BlurFade>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {artStyles.map((style, index) => (
-              <BlurFade key={style.key} delay={0.25 * (4 + index * 0.5)} inView>
-                <div 
-                  onClick={() => setSelectedStyle(style.key)}
-                  className={cn(
-                    "relative group rounded-xl overflow-hidden cursor-pointer transition-all",
-                    selectedStyle === style.key && "ring-4 ring-blue-500 scale-105"
-                  )}
-                >
-                  <div className="w-full h-[300px] object-cover rounded-2xl overflow-hidden">
-                    <img
-                      src={style.imageSrc}
-                      alt={style.title}
-                      className="w-full h-[300px] object-cover rounded-2xl group-hover:scale-110 duration-300 transition-all"
-                    />
-                  </div>
-                  <div className="absolute left-0 right-0 top-0 m-4 flex h-[30px] w-[29px] items-center justify-start gap-1 overflow-hidden rounded-full bg-[rgba(51,51,51,0.8)] transition-all duration-300 group-hover:w-[72px]">
-                    <Image 
-                      width={28} 
-                      height={28} 
-                      src="https://www.lovart.ai/assets/play-s.svg" 
-                      alt="Select"
-                    />
-                    <span className="text-[rgba(255,255,255,0.8)] sm:text-[14px] sm:font-[700]">
-                      Select
-                    </span>
-                  </div>
-                  <div className="text-center mt-2 pb-4">
-                    <p className="font-medium">{style.title}</p>
-                    <p className="text-sm text-gray-500">{style.description}</p>
-                  </div>
+        <section className="container-xl mx-auto mb-32" aria-label="Art style selection">
+          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-10">Choose Your Style</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+            {artStyles.map((style) => (
+              <button
+                key={style.key}
+                onClick={() => setSelectedStyle(style.key)}
+                aria-label={`Select ${style.title} art style`}
+                aria-pressed={selectedStyle === style.key}
+                className={`group text-left border transition-all duration-200 overflow-hidden rounded-xl ${
+                  selectedStyle === style.key 
+                    ? 'border-gray-900 shadow-xl ring-2 ring-gray-900 ring-offset-2' 
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-lg'
+                }`}
+              >
+                <div className="aspect-2/3 overflow-hidden bg-gray-100">
+                  <img
+                    src={style.imageSrc}
+                    alt={style.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
                 </div>
-              </BlurFade>
+                <div className="p-4 bg-white">
+                  <p className="font-semibold text-gray-900">{style.title}</p>
+                  <p className="text-sm text-gray-500 mt-1">{style.description}</p>
+                </div>
+              </button>
             ))}
           </div>
         </section>
 
         {/* Feature Highlights */}
-        <section className="max-w-6xl mx-auto mt-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <BlurFade delay={0.5} inView>
-              <div className="bg-white p-6 rounded-lg shadow-md border">
-                <div className="text-3xl mb-4">📖</div>
-                <h3 className="text-xl font-semibold mb-2">3-Panel Stories</h3>
-                <p className="text-gray-600">
-                  Every comic strip follows classic storytelling: setup, action, and payoff.
-                </p>
-              </div>
-            </BlurFade>
-            <BlurFade delay={0.6} inView>
-              <div className="bg-white p-6 rounded-lg shadow-md border">
-                <div className="text-3xl mb-4">🎨</div>
-                <h3 className="text-xl font-semibold mb-2">Visual Continuity</h3>
-                <p className="text-gray-600">
-                  Characters and settings stay consistent across all panels using AI.
-                </p>
-              </div>
-            </BlurFade>
-            <BlurFade delay={0.7} inView>
-              <div className="bg-white p-6 rounded-lg shadow-md border">
-                <div className="text-3xl mb-4">⚡</div>
-                <h3 className="text-xl font-semibold mb-2">Fast Generation</h3>
-                <p className="text-gray-600">
-                  Go from idea to finished comic strip in minutes, not hours.
-                </p>
-              </div>
-            </BlurFade>
+        <section className="container-lg mx-auto pb-32" aria-label="Features">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="text-center md:text-left">
+              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Three-Panel Structure</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Every comic strip follows classic storytelling: setup, action, and payoff.
+              </p>
+            </div>
+            <div className="text-center md:text-left">
+              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Visual Continuity</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Characters and settings stay consistent across all panels using AI.
+              </p>
+            </div>
+            <div className="text-center md:text-left">
+              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">Fast Generation</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Generate professional comic strips in minutes, not hours.
+              </p>
+            </div>
           </div>
         </section>
-      </div>
+      </main>
     </div>
   );
 }

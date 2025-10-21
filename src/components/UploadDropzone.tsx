@@ -37,12 +37,11 @@ export function UploadDropzone({ onAssetSelect }: UploadDropzoneProps) {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Upload Images</h2>
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+    <div className="border-2 border-gray-200 p-6">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-900 mb-6">Upload Images</h2>
+      <div className="border-2 border-gray-300 p-8">
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="text-4xl">📁</div>
-          <p className="text-gray-600">Upload images to create your comic panels</p>
+          <p className="text-sm text-gray-700">Upload images to create your comic panels</p>
           <UploadButton<OurFileRouter, "imageUploader">
             endpoint="imageUploader"
             onClientUploadComplete={(res) => {
@@ -52,20 +51,20 @@ export function UploadDropzone({ onAssetSelect }: UploadDropzoneProps) {
               }
             }}
             onUploadError={(error: Error) => {
-              alert(`Upload error: ${error.message}`);
+              alert(`Upload failed: ${error.message}`);
             }}
           />
         </div>
         {isLoading ? (
-          <div className="mt-4 text-gray-500">Loading assets...</div>
+          <div className="mt-4 text-sm text-gray-500">Loading assets...</div>
         ) : assets.length > 0 ? (
-          <div className="mt-4">
-            <h3 className="text-sm font-medium mb-2">Uploaded Files ({assets.length}):</h3>
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Uploaded Files ({assets.length})</h3>
             <div className="grid grid-cols-4 gap-2">
               {assets.map((asset) => (
                 <div
                   key={asset.id}
-                  className="relative w-full h-24 cursor-move border-2 border-gray-200 rounded hover:border-blue-500 transition-colors"
+                  className="relative w-full h-24 cursor-move border-2 border-gray-200 hover:border-gray-900"
                   draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData("text/plain", asset.fileUrl);
@@ -77,7 +76,7 @@ export function UploadDropzone({ onAssetSelect }: UploadDropzoneProps) {
                     src={asset.fileUrl}
                     alt={asset.filename}
                     fill
-                    className="object-cover rounded pointer-events-none"
+                    className="object-cover pointer-events-none"
                   />
                 </div>
               ))}
