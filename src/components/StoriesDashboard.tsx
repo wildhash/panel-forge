@@ -103,8 +103,7 @@ export function StoriesDashboard() {
   });
 
   const handleEditStory = (story: Story) => {
-    // Navigate to edit mode
-    console.log("Edit story:", story);
+    alert(`Edit story: ${story.title}`);
   };
 
   const handleDeleteStory = (story: Story) => {
@@ -114,8 +113,7 @@ export function StoriesDashboard() {
   };
 
   const handleViewStory = (story: Story) => {
-    // Navigate to view mode
-    console.log("View story:", story);
+    alert(`View story: ${story.title}`);
   };
 
   if (isLoading) {

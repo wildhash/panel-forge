@@ -3,47 +3,45 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, Edit, Trash2, Calendar, Palette, MoreVertical } from "lucide-react";
+import { Eye, Edit, Trash2, Calendar, BookOpen, MoreVertical, User } from "lucide-react";
 
-interface Story {
+interface Novel {
   id: string;
   title: string;
   description: string;
-  artStyle: string;
+  genre: string;
   createdAt: string;
-  thumbnailUrl?: string;
-  panelCount: number;
-  status: 'draft' | 'completed' | 'generating';
+  coverUrl?: string;
+  wordCount: number;
+  status: 'draft' | 'writing' | 'completed' | 'published';
+  chapters: number;
+  author: string;
 }
 
-interface StoryCardProps {
-  story: Story;
-  onEdit?: (story: Story) => void;
-  onDelete?: (story: Story) => void;
-  onView?: (story: Story) => void;
+interface NovelCardProps {
+  novel: Novel;
+  onEdit?: (novel: Novel) => void;
+  onDelete?: (novel: Novel) => void;
+  onView?: (novel: Novel) => void;
 }
 
-export function StoryCard({ story, onEdit, onDelete, onView }: StoryCardProps) {
+export function NovelCard({ novel, onEdit, onDelete, onView }: NovelCardProps) {
   const [showActions, setShowActions] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800';
-      case 'generating': return 'bg-yellow-100 text-yellow-800';
+      case 'writing': return 'bg-blue-100 text-blue-800';
       case 'draft': return 'bg-gray-100 text-gray-800';
+      case 'published': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getArtStyleLabel = (style: string) => {
-    const styleMap: { [key: string]: string } = {
-      'classic': 'Classic Comic',
-      'manga': 'Manga Style',
-      'graphic-novel': 'Graphic Novel',
-      'retro-pulp': 'Retro Pulp',
-      'minimalist': 'Minimalist'
-    };
-    return styleMap[style] || style;
+  const formatWordCount = (count: number) => {
+    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M words`;
+    if (count >= 1000) return `${(count / 1000).toFixed(0)}K words`;
+    return `${count} words`;
   };
 
   const formatDate = (dateString: string) => {
@@ -56,33 +54,40 @@ export function StoryCard({ story, onEdit, onDelete, onView }: StoryCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden group">
-      {/* Thumbnail */}
-      <div className="relative h-48 bg-linear-to-br from-blue-50 to-purple-50">
-        {story.thumbnailUrl ? (
+      {/* Cover */}
+      <div className="relative h-64 bg-linear-to-br from-blue-50 to-purple-50">
+        {novel.coverUrl ? (
           <Image
-            src={story.thumbnailUrl}
-            alt={story.title}
+            src={novel.coverUrl}
+            alt={novel.title}
             fill
             className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <div className="text-center">
-              <div className="text-4xl mb-2">📖</div>
-              <p className="text-sm text-gray-500">No preview</p>
+              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">No cover</p>
             </div>
           </div>
         )}
         
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(story.status)}`}>
-            {story.status}
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(novel.status)}`}>
+            {novel.status}
+          </span>
+        </div>
+
+        {/* Genre Badge */}
+        <div className="absolute top-3 right-3">
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-black/80 text-white">
+            {novel.genre}
           </span>
         </div>
 
         {/* Actions Menu */}
-        <div className="absolute top-3 right-3">
+        <div className="absolute bottom-3 right-3">
           <div className="relative">
             <button
               onClick={() => setShowActions(!showActions)}
@@ -92,20 +97,20 @@ export function StoryCard({ story, onEdit, onDelete, onView }: StoryCardProps) {
             </button>
             
             {showActions && (
-              <div className="absolute right-0 top-8 bg-white rounded-md shadow-lg border py-1 z-10 min-w-[120px]">
+              <div className="absolute right-0 bottom-8 bg-white rounded-md shadow-lg border py-1 z-10 min-w-[120px]">
                 <button
                   onClick={() => {
-                    onView?.(story);
+                    onView?.(novel);
                     setShowActions(false);
                   }}
                   className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
                 >
                   <Eye className="w-4 h-4" />
-                  View
+                  Read
                 </button>
                 <button
                   onClick={() => {
-                    onEdit?.(story);
+                    onEdit?.(novel);
                     setShowActions(false);
                   }}
                   className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2"
@@ -115,7 +120,7 @@ export function StoryCard({ story, onEdit, onDelete, onView }: StoryCardProps) {
                 </button>
                 <button
                   onClick={() => {
-                    onDelete?.(story);
+                    onDelete?.(novel);
                     setShowActions(false);
                   }}
                   className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red-600"
@@ -132,36 +137,42 @@ export function StoryCard({ story, onEdit, onDelete, onView }: StoryCardProps) {
       {/* Content */}
       <div className="p-4">
         <h3 className="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
-          {story.title}
+          {novel.title}
         </h3>
         
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-          {story.description}
+        <p className="text-gray-600 text-sm mb-3 line-clamp-3">
+          {novel.description}
         </p>
+
+        {/* Author */}
+        <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
+          <User className="w-3 h-3" />
+          <span>{novel.author}</span>
+        </div>
 
         {/* Metadata */}
         <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
           <div className="flex items-center gap-1">
             <Calendar className="w-3 h-3" />
-            {formatDate(story.createdAt)}
+            {formatDate(novel.createdAt)}
           </div>
           <div className="flex items-center gap-1">
-            <Palette className="w-3 h-3" />
-            {getArtStyleLabel(story.artStyle)}
+            <BookOpen className="w-3 h-3" />
+            {novel.chapters} chapters
           </div>
         </div>
 
-        {/* Panel Count */}
+        {/* Word Count and Action */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">
-            {story.panelCount} panel{story.panelCount !== 1 ? 's' : ''}
+          <span className="text-sm text-gray-600 font-medium">
+            {formatWordCount(novel.wordCount)}
           </span>
           
           <Link
-            href={`/create?story=${encodeURIComponent(story.description)}&style=${story.artStyle}&edit=${story.id}`}
+            href={`/novel/edit/${novel.id}`}
             className="text-blue-600 hover:text-blue-700 text-sm font-medium"
           >
-            {story.status === 'completed' ? 'View' : 'Continue'}
+            {novel.status === 'completed' ? 'Read' : 'Continue Writing'}
           </Link>
         </div>
       </div>

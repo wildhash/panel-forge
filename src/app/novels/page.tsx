@@ -1,10 +1,10 @@
 "use client";
 
-import { StoriesDashboard } from "@/components/StoriesDashboard";
+import { NovelsDashboard } from "@/components/NovelsDashboard";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default function StoriesPage() {
+export default function NovelsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -19,14 +19,14 @@ export default function StoriesPage() {
                 <ArrowLeft className="w-5 h-5" />
                 Home
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Panel Forge</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Novel Forge</h1>
             </div>
             <div className="flex items-center gap-4">
               <Link
-                href="/create"
+                href="/novel/create"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
-                Create New Story
+                Create New Novel
               </Link>
             </div>
           </div>
@@ -35,7 +35,7 @@ export default function StoriesPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <StoriesDashboard />
+        <NovelsDashboard />
       </main>
     </div>
   );
