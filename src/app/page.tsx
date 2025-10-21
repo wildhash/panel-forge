@@ -97,6 +97,12 @@ export default function HomePage() {
             </SignedOut>
             <SignedIn>
               <Link
+                href="/stories"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+              >
+                My Stories
+              </Link>
+              <Link
                 href="/create"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >

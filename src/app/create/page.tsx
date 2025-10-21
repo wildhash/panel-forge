@@ -136,8 +136,8 @@ export default function CreatePage() {
     try {
       // TODO: Implement save to database
       await new Promise(resolve => setTimeout(resolve, 1000));
-      alert("Comic strip saved! Check the studio to see your work.");
-      router.push("/studio");
+      alert("Comic strip saved! Check your stories to see your work.");
+      router.push("/stories");
     } catch (error) {
       console.error("Save error:", error);
       alert("Failed to save comic strip");
