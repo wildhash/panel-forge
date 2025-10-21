@@ -1,27 +1,26 @@
-# Panel Forge
+# Panel Forge - AI Comic Creator
 
-**Create a comic in an afternoon.** PanelForge turns your one-line idea into a finished, print-ready comic strip—plot, pages, art, and lettering included.
+Create professional comic strips in minutes using AI. Turn your story ideas into three-panel comic strips with multiple art styles.
 
 ## Features
 
-- 🎨 **5 Art Styles**: Classic Comic Book, Manga, Graphic Novel, Retro Pulp, Minimalist Line Art
-- ✨ **AI-Powered Generation**: Create 3-panel comic strips with OpenAI DALL-E 3
-- 🎬 **Visual Continuity**: Characters and settings stay consistent across all panels
-- 📖 **Story Structure**: Automatic setup → action → payoff panel composition
-- 💬 **Speech Balloons**: Add and edit text balloons on your panels (coming soon)
-- 🔐 **Authentication**: Secure user authentication with Clerk (optional)
-- 💾 **Database**: SQLite database with Prisma ORM
-- 🎯 **Type Safety**: Full TypeScript support with Zod validation
+- 🎨 **5 Art Styles**: Classic Comic Book, Manga, Graphic Novel, Retro Pulp, Minimalist
+- 🤖 **AI-Powered Generation**: Uses OpenAI DALL-E 3 for high-quality image generation
+- 📖 **Three-Panel Structure**: Classic storytelling format (Setup, Action, Payoff)
+- ✨ **Visual Continuity**: Characters and settings stay consistent across panels
+- 🔄 **Panel Iteration**: Refine individual panels with additional prompts
+- 📚 **Strip History**: Create multiple strips while maintaining character continuity
+- 🔒 **Authentication**: Secure user authentication with Clerk
 
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router)
-- **Authentication**: Clerk
-- **Database**: Prisma with SQLite
-- **Styling**: Tailwind CSS + shadcn/ui
-- **File Upload**: UploadThing
-- **Validation**: Zod
 - **Language**: TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Authentication**: Clerk
+- **Database**: Prisma + SQLite
+- **AI**: OpenAI DALL-E 3
+- **Animation**: Framer Motion
 
 ## Getting Started
 
@@ -29,7 +28,8 @@
 
 - Node.js 18+ 
 - npm or yarn
-- OpenAI API key (required for comic generation)
+- OpenAI API key
+- Clerk account (optional, for authentication)
 
 ### Installation
 
@@ -49,35 +49,83 @@ npm install
 cp .env.example .env
 ```
 
-Then edit `.env` and add your actual keys:
-- **Required**: Get OpenAI API key from [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-- Optional: Get Clerk keys from [https://clerk.com](https://clerk.com) (for authentication)
-- Optional: Get UploadThing keys from [https://uploadthing.com](https://uploadthing.com) (for image uploads)
-
+4. Add your API keys to `.env`:
 ```env
-OPENAI_API_KEY=sk-your-actual-api-key-here
+# OpenAI API Key (required)
+OPENAI_API_KEY=your_openai_api_key
+
+# Clerk Authentication (optional)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 ```
 
-4. Set up the database:
+5. Set up the database:
 ```bash
-npx prisma migrate dev
+npx prisma generate
+npx prisma db push
 ```
 
-5. Run the development server:
+6. Run the development server:
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+7. Open [http://localhost:3000](http://localhost:3000)
 
-### Quick Start - Create Your First Comic
+## Deployment to Vercel
 
-1. Choose an art style from the 5 options on the home page
-2. Describe your comic story (e.g., "A cat discovers a portal in their litter box")
-3. Click "Generate Comic Strip" and wait 30-90 seconds
-4. Save your completed 3-panel strip to the studio
+### Quick Deploy
 
-📖 **For detailed usage instructions, see [COMIC_CREATOR_GUIDE.md](./COMIC_CREATOR_GUIDE.md)**
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/wildhash/panel-forge)
+
+### Manual Deployment
+
+1. Push your code to GitHub
+
+2. Import project to Vercel:
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your GitHub repository
+   - Vercel will auto-detect Next.js
+
+3. Add Environment Variables in Vercel:
+   - Go to Project Settings → Environment Variables
+   - Add all variables from your `.env` file:
+     - `DATABASE_URL`
+     - `OPENAI_API_KEY`
+     - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+     - `CLERK_SECRET_KEY`
+     - `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`
+     - `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`
+
+4. Deploy:
+   - Click "Deploy"
+   - Vercel will build and deploy your app
+
+5. Set up database (one-time):
+```bash
+# After first deployment, run migrations
+npx prisma db push
+```
+
+## Usage
+
+### Creating Your First Comic
+
+1. **Select an Art Style**: Choose from 5 different comic art styles
+2. **Enter Your Story**: Describe your comic in 10-500 characters
+3. **Add Character Details** (optional): Describe your characters for consistency
+4. **Upload Reference Images** (optional): Upload character reference photos
+5. **Generate**: Click submit and watch your 3-panel comic generate automatically
+6. **Iterate**: Hover over any panel to regenerate or refine it
+7. **Continue**: Create additional strips while maintaining character continuity
+
+### Art Styles
+
+- **Classic Comic Book**: Bold lines, vibrant colors, superhero aesthetic
+- **Manga Style**: Screentone shading, dynamic angles, Japanese style
+- **Graphic Novel**: Realistic, muted tones, mature themes
+- **Retro Pulp**: Vintage comic aesthetic, classic pulp fiction style
+- **Minimalist Line Art**: Simple, clean lines, modern aesthetic
 
 ## Project Structure
 
@@ -85,90 +133,70 @@ npm run dev
 panel-forge/
 ├── src/
 │   ├── app/
-│   │   ├── actions/          # Server actions
-│   │   ├── api/              # API routes
-│   │   │   ├── generate/     # AI generation endpoint
-│   │   │   ├── iterate/      # Panel iteration endpoint
-│   │   │   ├── plan/         # Comic planning endpoint
-│   │   │   └── uploadthing/  # File upload endpoint
-│   │   ├── studio/           # Protected studio page
-│   │   ├── layout.tsx        # Root layout
-│   │   └── page.tsx          # Landing page
-│   ├── components/           # React components
-│   │   ├── BalloonEditor.tsx
-│   │   ├── ComicViewer.tsx
-│   │   ├── PageToolbar.tsx
-│   │   ├── PanelGrid.tsx
-│   │   ├── PromptBar.tsx
-│   │   └── UploadDropzone.tsx
-│   └── lib/                  # Utility functions
-├── prisma/
-│   └── schema.prisma         # Database schema
-└── public/                   # Static assets
+│   │   ├── api/           # API routes
+│   │   ├── create/        # Comic creation page
+│   │   ├── stories/       # Stories dashboard
+│   │   ├── novels/        # Novels dashboard
+│   │   ├── test-api/      # API testing page
+│   │   └── page.tsx       # Home page
+│   ├── components/        # React components
+│   └── lib/              # Utilities and helpers
+├── public/               # Static assets
+├── prisma/              # Database schema
+└── docs/                # Documentation
 ```
 
-## Database Models
+## Environment Variables
 
-- **Comic**: User's comic projects
-- **Page**: Pages within a comic
-- **Panel**: Individual panels with images and prompts
-- **Asset**: Uploaded files and images
-- **Revision**: Version history for pages
+### Required
+- `OPENAI_API_KEY`: Your OpenAI API key for DALL-E 3
+
+### Optional (Authentication)
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`: Clerk publishable key
+- `CLERK_SECRET_KEY`: Clerk secret key
+- `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`: Redirect after sign in
+- `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`: Redirect after sign up
+
+### Database
+- `DATABASE_URL`: Prisma database connection string
 
 ## API Routes
 
-- `POST /api/plan` - Generate a comic layout plan
-- `POST /api/generate` - Generate panel images (streaming)
-- `POST /api/iterate` - Iterate on existing panels (streaming)
-- `POST /api/uploadthing` - Handle file uploads
+- `/api/comic-generate` - Generate 3-panel comic strip
+- `/api/regenerate-panel` - Regenerate individual panel
+- `/api/test-generation` - Test OpenAI API connection
 
-## How It Works
+## Troubleshooting
 
-Panel Forge uses AI to generate consistent comic strips:
+### Generation Fails
+1. Check OpenAI API key is valid
+2. Verify you have credits in your OpenAI account
+3. Check browser console and terminal for errors
+4. Visit `/test-api` to test your API connection
 
-1. **Art Style Selection**: Choose from 5 professionally-tuned art styles
-2. **Story Input**: Describe your comic story in natural language
-3. **3-Panel Generation**: 
-   - Panel 1: Establishing shot (setup)
-   - Panel 2: Action shot (conflict)
-   - Panel 3: Reaction shot (payoff)
-4. **Visual Continuity**: Character descriptions and style codes ensure consistency
-5. **Real-time Progress**: Watch panels generate with live status updates
+### Authentication Issues
+1. Verify Clerk keys are correctly set in `.env`
+2. Check Clerk dashboard for account status
+3. Authentication can be disabled for testing (see middleware.ts)
 
-### Technology Stack
+## Contributing
 
-- **AI**: OpenAI DALL-E 3 for image generation
-- **Frontend**: Next.js 15 with App Router, React 19, Tailwind CSS
-- **Components**: shadcn/ui, Framer Motion for animations
-- **Backend**: Next.js API routes with streaming responses
-- **Database**: Prisma with SQLite
-- **Auth**: Clerk (optional)
-
-## Development
-
-```bash
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Run linter
-npm run lint
-
-# Run Prisma Studio (database GUI)
-npx prisma studio
-
-# Reset database
-npx prisma migrate reset
-```
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT
+MIT License - feel free to use this project for personal or commercial purposes.
+
+## Support
+
+For issues or questions:
+- Open an issue on GitHub
+- Check the documentation in `/docs`
+- Visit the test page at `/test-api` for API debugging
+
+## Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- AI powered by [OpenAI DALL-E 3](https://openai.com/dall-e-3)
+- Authentication by [Clerk](https://clerk.com/)

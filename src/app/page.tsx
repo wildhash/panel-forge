@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AIInputWithSearch } from "@/components/ui/ai-input-with-search";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
@@ -68,7 +69,16 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="border-b border-gray-200 bg-white" role="navigation" aria-label="Main navigation">
         <div className="container-xl mx-auto px-8 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-900">Panel Forge</h1>
+          <div className="flex items-center gap-3">
+            <Image 
+              src="/logo.png" 
+              alt="Panel Forge Logo" 
+              width={40} 
+              height={40}
+              className="object-contain"
+            />
+            <h1 className="text-xl font-semibold text-gray-900">Panel Forge</h1>
+          </div>
           <div className="flex items-center gap-3">
             <SignedOut>
               <SignInButton mode="modal">
