@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
+const hasClerkKeys = 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -8,21 +12,32 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Panel Forge</h1>
           <div>
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  Sign In
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
+            {hasClerkKeys ? (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link
+                    href="/studio"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Go to Studio
+                  </Link>
+                </SignedIn>
+              </>
+            ) : (
               <Link
                 href="/studio"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
                 Go to Studio
               </Link>
-            </SignedIn>
+            )}
           </div>
         </div>
       </nav>
@@ -38,21 +53,32 @@ export default function Home() {
             Perfect for storytelling, social media, and creative projects.
           </p>
           <div className="mt-10 flex justify-center gap-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="px-8 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-lg">
-                  Get Started
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
+            {hasClerkKeys ? (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="px-8 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-lg">
+                      Get Started
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link
+                    href="/studio"
+                    className="px-8 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-lg"
+                  >
+                    Open Studio
+                  </Link>
+                </SignedIn>
+              </>
+            ) : (
               <Link
                 href="/studio"
                 className="px-8 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-lg"
               >
-                Open Studio
+                Get Started
               </Link>
-            </SignedIn>
+            )}
           </div>
         </div>
 
