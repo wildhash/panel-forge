@@ -6,37 +6,37 @@ import { useRouter } from 'next/navigation';
 import { AIInputWithSearch } from "@/components/ui/ai-input-with-search";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
-// Comic art style examples - using appropriate stock images
+// Comic art style examples - using art-specific representative images
 const artStyles = [
   { 
     key: 'classic',
     title: 'Classic Comic Book',
     description: 'Bold lines, vibrant colors',
-    imageSrc: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=300&h=400&fit=crop&q=80'
+    imageSrc: 'https://images.unsplash.com/photo-1588497859490-85d1c17db96d?w=300&h=400&fit=crop&q=80' // Vintage superhero comics
   },
   { 
     key: 'manga',
     title: 'Manga Style',
     description: 'Screentone shading, dynamic angles',
-    imageSrc: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=300&h=400&fit=crop&q=80'
+    imageSrc: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=300&h=400&fit=crop&q=80' // Manga books/style
   },
   { 
     key: 'graphic-novel',
     title: 'Graphic Novel',
     description: 'Realistic, muted tones',
-    imageSrc: 'https://images.unsplash.com/photo-1601645191163-3fc0d5d64e35?w=300&h=400&fit=crop&q=80'
+    imageSrc: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop&q=80' // Books/graphic novels
   },
   { 
     key: 'retro-pulp',
     title: 'Retro Pulp',
     description: 'Vintage comic aesthetic',
-    imageSrc: 'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=300&h=400&fit=crop&q=80'
+    imageSrc: 'https://images.unsplash.com/photo-1609618663526-60c3c3c0b580?w=300&h=400&fit=crop&q=80' // Vintage pulp magazines
   },
   { 
     key: 'minimalist',
     title: 'Minimalist Line Art',
     description: 'Simple, clean lines',
-    imageSrc: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=300&h=400&fit=crop&q=80'
+    imageSrc: 'https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=300&h=400&fit=crop&q=80' // Minimalist line drawings
   },
 ];
 
@@ -160,32 +160,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Feature Highlights */}
-        <section className="container-lg mx-auto pb-32" aria-label="Features">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center md:text-left">
-              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Three-Panel Structure</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Every comic strip follows classic storytelling: setup, action, and payoff.
-              </p>
-            </div>
-            <div className="text-center md:text-left">
-              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Visual Continuity</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Characters and settings stay consistent across all panels using AI.
-              </p>
-            </div>
-            <div className="text-center md:text-left">
-              <div className="w-12 h-12 bg-gray-900 mb-4 mx-auto md:mx-0 rounded-lg"></div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Fast Generation</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Generate professional comic strips in minutes, not hours.
-              </p>
-            </div>
-          </div>
-        </section>
       </main>
     </div>
   );

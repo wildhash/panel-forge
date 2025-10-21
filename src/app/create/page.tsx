@@ -42,6 +42,7 @@ export default function CreatePage() {
   useEffect(() => {
     const storyParam = searchParams.get("story");
     const styleParam = searchParams.get("style");
+    
     if (storyParam) {
       setStory(storyParam);
     }
@@ -49,21 +50,32 @@ export default function CreatePage() {
       setArtStyle(styleParam);
     }
     
-    // Auto-generate if both story and style are provided
-    if (storyParam && styleParam && panels.every(p => !p.imageUrl && !p.isGenerating)) {
-      // Trigger generation after a short delay to ensure state is set
-      setTimeout(() => {
-        handleGenerate();
-      }, 500);
+    // Auto-generate if both story and style are provided from URL
+    if (storyParam && styleParam) {
+      // Small delay to ensure state is set
+      const timer = setTimeout(() => {
+        // Check if we haven't already started generating
+        if (!isGenerating && panels.every(p => !p.imageUrl && !p.isGenerating)) {
+          console.log("🚀 Auto-starting generation from home page...");
+          handleGenerate();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [searchParams]);
 
   const handleGenerate = async () => {
+    console.log("🎬 handleGenerate called");
+    console.log("Story:", story);
+    console.log("Art Style:", artStyle);
+    
     if (!story.trim()) {
       alert("Enter a story description to generate.");
       return;
     }
 
+    console.log("✅ Starting generation...");
     setIsGenerating(true);
     setGenerationStatus("Starting generation...");
     
@@ -148,8 +160,11 @@ export default function CreatePage() {
         }
       }
     } catch (error: any) {
-      console.error("Generation error:", error);
-      alert(`Generation failed. ${error.message}`);
+      console.error("❌ Generation error:", error);
+      console.error("Error details:", error.response || error);
+      const errorMessage = error.message || "Generation failed";
+      alert(`Generation failed: ${errorMessage}\n\nPlease check:\n1. OpenAI API key is valid\n2. You have credits in your OpenAI account\n3. Check the browser console and terminal for detailed errors`);
+      setGenerationStatus("");
       setIsGenerating(false);
       setPanels([
         { panelNumber: 1, imageUrl: null, isGenerating: false },

@@ -27,11 +27,14 @@ export async function POST(req: Request) {
 
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key') {
+      console.error("❌ OpenAI API key not configured");
       return NextResponse.json(
         { error: "OpenAI API key not configured. Please add OPENAI_API_KEY to your .env file." },
         { status: 500 }
       );
     }
+
+    console.log("✅ OpenAI API key found, length:", process.env.OPENAI_API_KEY?.length);
 
     const body = await req.json();
     const { story, artStyle, characterDescription, hasReferenceImages } = GenerateComicSchema.parse(body);
@@ -71,6 +74,9 @@ export async function POST(req: Request) {
             );
 
             try {
+              console.log(`🎨 Generating panel ${i + 1}/3...`);
+              console.log(`📝 Prompt: ${panelPrompts[i].substring(0, 100)}...`);
+              
               const response = await openai.images.generate({
                 model: "dall-e-3",
                 prompt: panelPrompts[i],
@@ -79,6 +85,8 @@ export async function POST(req: Request) {
                 quality: "standard",
                 style: "vivid"
               });
+              
+              console.log(`✅ Panel ${i + 1} generated successfully`);
 
               const imageUrl = response.data?.[0]?.url;
               if (!imageUrl) {
@@ -96,11 +104,15 @@ export async function POST(req: Request) {
                 })}\n\n`)
               );
             } catch (error: any) {
+              console.error(`❌ Panel ${i + 1} generation failed:`, error.message);
+              console.error("Error details:", error.response?.data || error);
+              
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify({ 
                   error: true,
                   message: `Failed to generate panel ${i + 1}: ${error.message}`,
-                  panelNumber: i + 1
+                  panelNumber: i + 1,
+                  details: error.response?.data || error.message
                 })}\n\n`)
               );
               throw error;
@@ -137,16 +149,19 @@ export async function POST(req: Request) {
         "Connection": "keep-alive",
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
+      console.error("❌ Validation error:", error.issues);
       return NextResponse.json(
         { error: "Invalid request", details: error.issues },
         { status: 400 }
       );
     }
-    console.error("Comic generation error:", error);
+    console.error("❌ Comic generation error:", error);
+    console.error("Error message:", error.message);
+    console.error("Error details:", error.response?.data || error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", message: error.message },
       { status: 500 }
     );
   }
