@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/studio(.*)'])
 
@@ -9,17 +8,17 @@ const hasClerkKeys =
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.startsWith('pk_');
 
-export default function middleware(req: NextRequest) {
+export default clerkMiddleware((auth, req) => {
   // If Clerk is not configured, allow all routes
   if (!hasClerkKeys) {
     return NextResponse.next()
   }
   
-  // If Clerk is configured, use Clerk middleware for protected routes
-  return clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) await auth.protect()
-  })(req)
-}
+  // If Clerk is configured, protect the routes
+  if (isProtectedRoute(req)) {
+    auth.protect()
+  }
+})
 
 export const config = {
   matcher: [
